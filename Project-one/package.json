@@ -5,14 +5,15 @@
   "description": "",
   "main": "servertry.js",
   "dependencies": {
-    
-    "cors": "^2.8.5",
     "esm": "^3.2.25",
+    "exif-parser": "^0.1.12",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "sharp": "^0.29.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/filesystem": "0.0.32",
     "@types/jasmine": "^3.10.3",
     "@types/node": "^17.0.8",
     "@types/sharp": "^0.29.5",
@@ -24,16 +25,17 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "typescript": "^4.5.4",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "ts-exif-parser": "^0.2.2",
+    "typescript": "^4.5.4"
   },
   "scripts": {
     "build": "npx tsc",
     "lint": "eslint 'index.js'",
-    "prettier": "prettier --config .prettierrc '*.js' --write", 
+    "prettier": "prettier --config .prettierrc '*.js' --write",
     "server": "node build/server",
     "start": "npm run build && npm run server ",
-    "starttry": "nodemon build/try/project-1-udacity-try/servertry --exec babel-node -e js"
+    "starttry": "nodemon src/server --exec babel-node -e ts"
   },
   "author": "",
   "license": "ISC"
