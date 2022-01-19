@@ -1,67 +1,82 @@
-const queryString  = require('querystring');
-const path = require('path');
-const sharp = require('sharp');
-import {Request, Response} from 'express';
-//import QueryString from 'qs';
-import fs,{promises as fsPromise}   from 'fs';
-import { buffer } from 'stream/consumers';
-import {ExifParserFactory}  from 'ts-exif-parser';
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
+import { Request, Response } from 'express';
+import { ExifParserFactory } from 'ts-exif-parser';
 
+const welcome = (_req: Request, res: Response) => {
+  res.send(
+    'Welcom to you image processing api \n You can test our Api by accessing this url http://localhost:3000/image ?filename=choose from (index, index-01 index-02) the default format is jpg &width= (your desired width)&height=(your desired height)\n and here is an example to crop our index.jpg image to 200 * 200 size  \n http://localhost:3000/image?filename=index&width=200&height=200  '
+  );
+};
 
-const welcome = (req:Request, res:Response) => {
-       res.send('Hello from routes!');
-     };
-
-const imgResize =  (req: Request, res: Response) => {
-      // get the query data from the url 
-      const QueryData = req.query;
-      let ImgWidth:unknown = QueryData.width , ImgHeight:unknown = QueryData.height,fileName:unknown = QueryData.filename;
-      const filename:string = fileName as string, imgW:number = parseInt(ImgWidth as string),  imgH:number = parseInt(ImgHeight as string),
-      originalImg= path.join(__dirname ,`../static/imgs/${filename}`), newImg = path.join(__dirname ,`../static/imgs/thumb-${filename}`);
+const imgProcessing = (req: Request, res: Response) => {
+  // get the query data from the url
+  const QueryData = req.query;
+  const ImgWidth: unknown = QueryData.width;
+  const ImgHeight: unknown = QueryData.height;
+  const fileName: unknown = QueryData.filename;
+  const filename: string = fileName as string;
+  const imgW: number = parseInt(ImgWidth as string);
+  const imgH: number = parseInt(ImgHeight as string);
+  const originalImg = path.join(__dirname, `../static/imgs/${filename}.jpg`);
+  const newImg = path.join(__dirname, `../static/imgs/thumb-${filename}.jpg`);
+  /*
+   * function to resize the img with the requested dimension using sharp module
+   * it takes the name and the path of the img using path module (look at originalImg variable)
+   * send the resizedImg to the user using res.sendFile
+   */
+  const resizeImg = (img: string, imgW: number, imgH: number) => {
+    try {
+      sharp(img)
+        .resize(imgW, imgH)
+        .toFile(
+          path.join(__dirname, `../static/imgs/thumb-${filename}.jpg`),
+          (_err: object, _info: object) => {}
+        );
       /*
-        * function to resize the img with the requested dimension using sharp module 
-        * it takes the name and the path of the img using path module (look at originalImg variable)
-        * send the resizedImg to the user using res.sendFile 
-      */
-      const resizeImg =   (img:string) => {
-        sharp(img).resize(imgW,imgH).toFile(path.join(__dirname ,`../static/imgs/thumb-${filename}`),(err:object,info:object) => {} )
-        setTimeout( ()=> {res.sendFile(`thumb-${filename}`, { root: path.join(__dirname, '../static/imgs') })}, 500)
-        console.log('newly resized img is sent')
-      }
-
-        // function resizing the image using sharp module and it is self invoked
-        ( () => {
-          try{
-            const readImg = fs.readFileSync(newImg),
-            // using exif-parser module to get the meta data of the img and the compare it for the requested one
-            parser = ExifParserFactory.create(readImg),
-            imgData = (parser.parse());
-            const preW = imgData.imageSize?.width, preH = imgData.imageSize?.height;
-            if (preH != imgH || preW != imgW){
-              resizeImg(originalImg);
-            }
-            else{
-              res.sendFile(`thumb-${filename}`, { root: path.join(__dirname, '../static/imgs') });
-              console.log('previous img has been sent')
-            }
-          
-          }
-          catch(err){
-            console.log(`${err} \n no thumbnail img found`)
-            
-            // sharp takes the img name then apply the resize method on it that takes two params width and height whivh I got from query url
-            resizeImg(originalImg);
-            
-            // Using setTimeout as res.sendFile is async so it will send file before it processed 
-           
-          }
-            
-          })();
-          
+       * we could use this line of code to allow multiple sizes for an image
+       * sharp(img).resize(imgW,imgH).toFile(path.join(__dirname ,`../static/imgs/thumb-${filename}(${imgW}-${imgH})`),(_err:object,_info:object) => {})
+       * if we used that so we have to change the name of the file to be sent i.e (change each thumb-${filename} to thumb-${filename}(${imgW}-${imgH}  )
+       */
+      // using setTimeout as res.sendFile is async func so we want to put it in the timer stage
+      setTimeout(() => {
+        res.sendFile(`thumb-${filename}.jpg`, {
+          root: path.join(__dirname, '../static/imgs')
+        });
+      }, 500);
+      console.log('newly cropped img is sent');
+    } catch (err) {
+      console.log(
+        'You should specify an existed filename & positive value for width and height'
+      );
     }
+  };
+  /*  resize function
+   * first checks if the size requested is already exist (caching)
+   * if its a new size so resize the image and sent it
+   */
+  (() => {
+    try {
+      const readImg = fs.readFileSync(newImg);
+      // using exif-parser module to get the size from meta-data of the img and then compare it with the requested size
+      const parser = ExifParserFactory.create(readImg);
+      const imgData = parser.parse();
+      const preW = imgData.imageSize?.width;
+      const preH = imgData.imageSize?.height;
+      if (preH === imgH && preW === imgW) {
+        res.sendFile(`thumb-${filename}.jpg`, {
+          root: path.join(__dirname, '../static/imgs')
+        });
+        console.log('previous cropped img has been sent');
+      } else {
+        resizeImg(originalImg, imgW, imgH);
+      }
+    } catch (err) {
+      console.log(`${err} \n no cropped img found\n`);
+      resizeImg(originalImg, imgW, imgH);
+    }
+  })();
+};
 
-  
-
-
-  export {imgResize , welcome} ;
-
+export { imgProcessing, welcome };

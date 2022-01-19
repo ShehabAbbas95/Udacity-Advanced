@@ -1,11 +1,13 @@
-const express = require('express');
-import {router} from './routes/router';
-const app = express()
-const port = 3000
+import { router } from './routes/router';
+import express from 'express';
+const app = express();
+const port = 3000;
 app.use(express.static('build/static'));
 
-app.use('/', router) 
+app.use('/', router);
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+  console.log(`Image-Processing app Running at http://localhost:${port}`);
+});
+
+export default app;
