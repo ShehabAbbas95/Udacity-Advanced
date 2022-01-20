@@ -6,7 +6,7 @@ import { ExifParserFactory } from 'ts-exif-parser';
 
 const welcome = (_req: Request, res: Response) => {
   res.send(
-    'Welcom to you image processing api \n You can test our Api by accessing this url http://localhost:3000/image ?filename=choose from (index, index-01 index-02) the default format is jpg &width= (your desired width)&height=(your desired height)\n and here is an example to crop our index.jpg image to 200 * 200 size  \n http://localhost:3000/image?filename=index&width=200&height=200  '
+    'Welcom to you image processing api \n You can test our Api by accessing this url http://localhost:3000/image ?filename=choose from (index, index-01 index-02)  &width= (your desired width)&height=(your desired height)\n and here is an example to crop our index.jpg image to 200 * 200 size  \n http://localhost:3000/image?filename=index&width=200&height=200  '
   );
 };
 
@@ -19,30 +19,29 @@ const imgProcessing = (req: Request, res: Response) => {
   const filename: string = fileName as string;
   const imgW: number = parseInt(ImgWidth as string);
   const imgH: number = parseInt(ImgHeight as string);
-  const originalImg = path.join(__dirname, `../static/imgs/${filename}.jpg`);
-  const newImg = path.join(__dirname, `../static/imgs/thumb-${filename}.jpg`);
+  const originalImg = path.join(__dirname, `../static/imgs/${filename}`);
+  const fullfilename = filename.split('.');
+  const dirName = fullfilename[0];
+  const fileExtn = fullfilename[1]
+  const newImg = path.join(__dirname, `../static/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`);
   /*
    * function to resize the img with the requested dimension using sharp module
    * it takes the name and the path of the img using path module (look at originalImg variable)
-   * send the resizedImg to the user using res.sendFile
+   * send the resizedImg to the user using res.sendFile()
    */
   const resizeImg = (img: string, imgW: number, imgH: number) => {
     try {
       sharp(img)
         .resize(imgW, imgH)
         .toFile(
-          path.join(__dirname, `../static/imgs/thumb-${filename}.jpg`),
+          path.join(__dirname, `../static/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`),
           (_err: object, _info: object) => {}
         );
-      /*
-       * we could use this line of code to allow multiple sizes for an image
-       * sharp(img).resize(imgW,imgH).toFile(path.join(__dirname ,`../static/imgs/thumb-${filename}(${imgW}-${imgH})`),(_err:object,_info:object) => {})
-       * if we used that so we have to change the name of the file to be sent i.e (change each thumb-${filename} to thumb-${filename}(${imgW}-${imgH}  )
-       */
+     
       // using setTimeout as res.sendFile is async func so we want to put it in the timer stage
       setTimeout(() => {
-        res.sendFile(`thumb-${filename}.jpg`, {
-          root: path.join(__dirname, '../static/imgs')
+        res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
+          root: path.join(__dirname, `../static/thumbnails/${dirName}`)
         });
       }, 500);
       console.log('newly cropped img is sent');
@@ -65,8 +64,8 @@ const imgProcessing = (req: Request, res: Response) => {
       const preW = imgData.imageSize?.width;
       const preH = imgData.imageSize?.height;
       if (preH === imgH && preW === imgW) {
-        res.sendFile(`thumb-${filename}.jpg`, {
-          root: path.join(__dirname, '../static/imgs')
+        res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
+          root: path.join(__dirname, `../static/thumbnails/${dirName}`)
         });
         console.log('previous cropped img has been sent');
       } else {

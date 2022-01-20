@@ -1,9 +1,9 @@
 {
   "type": "module",
-  "name": "express-lesson",
+  "name": "image-processing-api",
   "version": "1.0.0",
   "description": "",
-  "main": "servertry.js",
+  "main": "server.js",
   "dependencies": {
     "esm": "^3.2.25",
     "exif-parser": "^0.1.12",
@@ -43,8 +43,9 @@
     "server": "node build/server",
     "jasmine": "jasmine",
     "start": "npm run build && npm run server ",
+    "startall": "npm run build && npm run prettier && npm run lint-js && npm run server",
     "test": "npm run build && npm run jasmine "
   },
-  "author": "",
+  "author": "Eng.Shehab Abbas",
   "license": "ISC"
 }
