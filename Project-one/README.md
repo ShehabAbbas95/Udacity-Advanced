@@ -10,11 +10,9 @@ Here is The steps to install the app
 - In your commandline type 'npm install' and it will automatically install all the node packages used in our app
 - Build our app and start our server  it using 'npm start' script
 - You will see in your command a message 'Image-Processing app Running at http://localhost:3000'
-- Visit http://localhost:3000/
+- Visit http://localhost:3000/ for more instructions
+- Visit http://localhost:3000/image?filename=index.jpg&width=200&height=200 to test processing index image
 
-
-To be able to use this app all you need is to install nodejs@12.13
-This will require modifying the `server.js` file and the `website/app.js` file. You can see `index.html` for element references, and once you are finished with the project steps, you can use `style.css` to style your application to customized perfection.
 
 ## Extras
 If you are interested in testing the code as you go, you can use `npm test` for running some basic tests on the code.

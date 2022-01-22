@@ -7,10 +7,8 @@
   "dependencies": {
     "esm": "^3.2.25",
     "express": "^4.17.1",
-    "fs": "0.0.1-security",
-    "jasmine": "^3.0.0",
-    "sharp": "^0.29.3",
-    "supertest": "^6.2.2"
+    "sharp": "^0.29.3"
+    
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -29,20 +27,19 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^5.2.0",
+    "jasmine": "^3.0.0",
     "jasmine-spec-reporter": "^7.0.0",
-    "nodemon": "^2.0.15",
-    "ts-exif-parser": "^0.2.2",
+    "supertest": "^6.2.2",
+    "fs": "0.0.1-security",
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "build": "npx tsc",
-    "lint-js": "eslint ./build/server.js",
-    "lint-ts": "eslint ./src/server.ts",
-    "prettier": "prettier --config .prettierrc ./build/**/*.js --write",
+    "build": "npx tsc ",
+    "lint": "eslint ./src/**/*.ts",
+    "prettier": "prettier --config .prettierrc ./src/**/*.ts --write",
     "server": "node build/server",
     "jasmine": "jasmine",
-    "start": "npm run build && npm run server ",
-    "startall": "npm run build && npm run prettier && npm run lint-js && npm run server",
+    "start": " npm run build && npm run prettier && npm run lint && npm run server",
     "test": "npm run build && npm run jasmine "
   },
   "author": "Eng.Shehab Abbas",

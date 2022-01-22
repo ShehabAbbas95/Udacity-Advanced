@@ -1,169 +1,82 @@
-'use strict';
-var __awaiter =
-  (this && this.__awaiter) ||
-  function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-      return value instanceof P
-        ? value
-        : new P(function (resolve) {
-            resolve(value);
-          });
-    }
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator['throw'](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-  };
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.welcome = exports.imgProcessing = void 0;
-const fs_1 = __importDefault(require('fs'));
-const path_1 = __importDefault(require('path'));
-const sharp_1 = __importDefault(require('sharp'));
-const welcome = (_req, res) => {
-  res.send(
-    'Welcom to you image processing api \n You can test our Api by accessing this url http://localhost:3000/image ?filename=choose from (index, index-01 index-02)  &width= (your desired width)&height=(your desired height)\n and here is an example to crop our index.jpg image to 200 * 200 size  \n http://localhost:3000/image?filename=index&width=200&height=200  '
-  );
 };
-exports.welcome = welcome;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.imgProcessing = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const resizeFunc_1 = __importDefault(require("./resizeFunc"));
 const imgProcessing = (req, res) => {
-  // get the query data from the url
-  const QueryData = req.query;
-  const ImgWidth = QueryData.width;
-  const ImgHeight = QueryData.height;
-  const fileName = QueryData.filename;
-  if (!fileName || !ImgWidth || !ImgHeight) {
-    throw new Error(
-      'Missing Query Data \n You have to specify an existed filename and positive value for width and height'
-    );
-  }
-  const filename = fileName;
-  const imgW = parseInt(ImgWidth);
-  const imgH = parseInt(ImgHeight);
-  const originalImg = path_1.default.join(
-    __dirname,
-    `../static/imgs/${filename}`
-  );
-  // split the requested file name to use the name and the exten
-  const fullfilename = filename.split('.');
-  const dirName = fullfilename[0];
-  const fileExtn = fullfilename[1];
-  // get the directory of the requested thumb
-  const thumbDir = path_1.default.join(
-    __dirname,
-    `../static/thumbnails/${dirName}`
-  );
-  const newImg = path_1.default.join(
-    __dirname,
-    `../static/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`
-  );
-  /*
-   * function to resize the img with the requested dimension using sharp module
-   * it takes the name and the path of the img using path module (look at originalImg variable)
-   * send the resizedImg to the user using res.sendFile()
-   */
-  const resizeImg = (img, imgW, imgH) => {
-    try {
-      (0, sharp_1.default)(img)
-        .resize(imgW, imgH)
-        .toFile(
-          path_1.default.join(
-            __dirname,
-            `../static/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`
-          ),
-          (_err, _info) => {}
-        );
-      // using setTimeout as res.sendFile is async func so we want to put it in the timer stage
-      setTimeout(() => {
-        res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
-          root: path_1.default.join(
-            __dirname,
-            `../static/thumbnails/${dirName}`
-          ),
-        });
-      }, 500);
-      console.log('Newly Processed Image is sent');
-    } catch (err) {
-      console.log(
-        'You should specify an existed filename & positive value for width and height',
-        typeof err,
-        err
-      );
+    // get the query data from the url
+    const QueryData = req.query;
+    const filename = QueryData.filename;
+    const imgW = parseInt(QueryData.width);
+    const imgH = parseInt(QueryData.width);
+    if (!filename || !imgW || !imgH) {
+        throw new Error('Missing Query Data \n You have to specify an existed filename and positive value for width and height\n');
     }
-  };
-  /*  resize function
-   * first checks if the size requested is already exist (caching)
-   * if its a new size so resize the image and sent it
-   */
-  (() =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      /*
-       * the next try block functionality is as follow
-       * first try to find a directory with the name of the img requested using fs.readFileSync()
-       * if there is a directory then it goes to the next try/catch block
-       * if there is no directory then it make it dynamically with the name of the requested img using fs.mkdir()
-       */
-      try {
-        fs_1.default.readdirSync(thumbDir);
-      } catch (err) {
-        console.log(
-          `\n There is no previous cropped sizes for Your ${fullfilename} `
-        );
-        (() =>
-          __awaiter(void 0, void 0, void 0, function* () {
-            fs_1.default.mkdirSync(thumbDir);
-          }))();
-      }
-      /*
-       * the next try block functionality is as follow
-       * first try to find a previously processed img (stored thumb) with the name of the  requested img using fs.readFileSync()
-       * if there is an img then it sent to the user without need of regenerating a new img using fs caching
-       * if there is no stored img with same size stored it generates a thumb img using resizeImg()
-       * then send it to the user using fileSend()
-       */
-      try {
-        const readImg = fs_1.default.readFileSync(newImg);
-        // using sharp module to get the size from meta-data of the img and then compare it with the requested size
-        const imgData = yield (0, sharp_1.default)(readImg).metadata();
-        const preW = imgData.width;
-        const preH = imgData.height;
-        if (preH === imgH && preW === imgW) {
-          res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
-            root: path_1.default.join(
-              __dirname,
-              `../static/thumbnails/${dirName}`
-            ),
-          });
-          console.log('Cropped stored image has been sent');
-        } else {
-          resizeImg(originalImg, imgW, imgH);
+    const originalImg = path_1.default.join(__dirname, `../static/imgs/${filename}`);
+    // split the requested file name to use the name and the exten
+    const fullfilename = filename.split('.');
+    const dirName = fullfilename[0];
+    const fileExtn = fullfilename[1];
+    // get the directory of the requested thumb
+    const thumbDir = path_1.default.join(__dirname, `../static/thumbnails/${dirName}`);
+    const newImg = path_1.default.join(__dirname, `../static/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`);
+    // function to send the img to the user
+    const sendingImg = () => {
+        setTimeout(() => {
+            res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
+                root: path_1.default.join(__dirname, `../static/thumbnails/${dirName}`),
+            });
+        }, 500);
+    };
+    /*  resize function
+     * first checks if the size requested is already exist (caching)
+     * if its a new size so resize the image and sent it
+     */
+    (() => __awaiter(void 0, void 0, void 0, function* () {
+        /*
+         * the next try block functionality is as follow
+         * first try to find a directory with the name of the img requested using fs.readFileSync()
+         * if there is a directory then it goes to the next try/catch block
+         * if there is no directory then it make it dynamically with the name of the requested img using fs.mkdir()
+         */
+        try {
+            fs_1.default.readdirSync(thumbDir);
         }
-      } catch (err) {
-        console.log(`No cropped img found\nProcessing Your Image`);
-        resizeImg(originalImg, imgW, imgH);
-      }
+        catch (err) {
+            console.log(`\n There is no previous cropped sizes for Your ${fullfilename} `);
+            (() => __awaiter(void 0, void 0, void 0, function* () {
+                fs_1.default.mkdirSync(thumbDir);
+            }))();
+        }
+        /*
+         * the next try block functionality is as follow
+         * first try to find a previously processed img (stored thumb) with the name of the  requested img using fs.readFileSync()
+         * if there is an img then it sent to the user without need of regenerating a new img using fs caching
+         * if there is no stored img with same size stored it generates a thumb img using resizeImg()
+         * then send it to the user using fileSend()
+         */
+        try {
+            const readImg = fs_1.default.readFileSync(newImg);
+            sendingImg();
+        }
+        catch (err) {
+            console.log(`No cropped img found\nProcessing Your Image`);
+            (0, resizeFunc_1.default)(originalImg, filename, imgW, imgH);
+            sendingImg();
+        }
     }))();
 };
 exports.imgProcessing = imgProcessing;
