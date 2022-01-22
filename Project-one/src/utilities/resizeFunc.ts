@@ -20,7 +20,7 @@ const resizeImg = async (
       .toFile(
         path.join(
           __dirname,
-          `../static/thumbnails/${imgName}/(${imgW}-${imgH}).${imgExt}`
+          `../../images/thumbnails/${imgName}/(${imgW}-${imgH}).${imgExt}`
         ),
         (_err: object, _info: object) => {}
       );
