@@ -40,19 +40,19 @@ const imgProcessing = (req, res) => {
     if (!filename.includes('.') || !filenameDot) {
         throw new Error('Invalid filename extension \n You have to specify an existed filename i.e(filename.ext) and positive value for width and height\n');
     }
-    const originalImg = path_1.default.join(__dirname, `../imgs/${filename}`);
+    const originalImg = path_1.default.join(__dirname, `../../images/imgs/${filename}`);
     // split the requested file name to use the name and the exten
     const fullfilename = filename.split('.');
     const dirName = fullfilename[0];
     const fileExtn = fullfilename[1];
     // get the directory of the requested thumb
-    const thumbDir = path_1.default.join(__dirname, `../static/thumbnails/${dirName}`);
-    const newImg = path_1.default.join(__dirname, `../static/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`);
+    const thumbDir = path_1.default.join(__dirname, `../../images/thumbnails/${dirName}`);
+    const newImg = path_1.default.join(__dirname, `../../images/thumbnails/${dirName}/(${imgW}-${imgH}).${fileExtn}`);
     // function to send the img to the user
     const sendingImg = () => {
         setTimeout(() => {
             res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
-                root: path_1.default.join(__dirname, `../static/thumbnails/${dirName}`)
+                root: path_1.default.join(__dirname, `../../images/thumbnails/${dirName}`)
             });
         }, 500);
     };

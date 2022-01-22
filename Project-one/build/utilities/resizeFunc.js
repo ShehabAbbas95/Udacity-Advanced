@@ -25,7 +25,7 @@ const resizeImg = (imgPath, imgfullname, imgW, imgH) => __awaiter(void 0, void 0
     try {
         yield (0, sharp_1.default)(imgPath)
             .resize(imgW, imgH)
-            .toFile(path_1.default.join(__dirname, `../static/thumbnails/${imgName}/(${imgW}-${imgH}).${imgExt}`), (_err, _info) => { });
+            .toFile(path_1.default.join(__dirname, `../../images/thumbnails/${imgName}/(${imgW}-${imgH}).${imgExt}`), (_err, _info) => { });
         console.log('Newly Processed Image is sent');
     }
     catch (err) {

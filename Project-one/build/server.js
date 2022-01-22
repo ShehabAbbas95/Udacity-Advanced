@@ -13,3 +13,4 @@ app.listen(port, () => {
     console.log(`Image-Processing app Running at http://localhost:${port}`);
 });
 exports.default = app;
+console.log('asd')
