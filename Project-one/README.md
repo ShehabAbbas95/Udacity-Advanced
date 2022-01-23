@@ -5,10 +5,11 @@ This project aims  to create a web app that uses Web API and user query-data to 
 
 ## Instructions
 Here is The steps to install the app
-- install Nodejs@v12.13.0 from https://nodejs.org/download/release/v12.13.0/win-x86/
+- install Nodejs@v12.13.0 from https://nodejs.org/download/release/v12.14/
 - check npm version I'd recommend npm@6.12.0 to have no issue
 - In your commandline type 'npm install' and it will automatically install all the node packages used in our app
 - Build our app and start our server  it using 'npm start' script
+- Test Our app using 'npm test'
 - You will see in your command a message 'Image-Processing app Running at http://localhost:3000'
 - Visit http://localhost:3000/ for more instructions
 - Visit http://localhost:3000/image?filename=index.jpg&width=200&height=200 to test processing index image

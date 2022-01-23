@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "image-processing-api",
   "version": "1.0.0",
   "description": "",
@@ -30,6 +29,7 @@
     "jasmine": "^3.0.0",
     "jasmine-spec-reporter": "^7.0.0",
     "supertest": "^6.2.2",
+    "prettier": "^2.2.1",
     "fs": "0.0.1-security",
     "typescript": "^4.5.4"
   },
@@ -39,7 +39,7 @@
     "prettier": "prettier --config .prettierrc ./src/**/*.ts --write",
     "server": "node build/server",
     "jasmine": "jasmine",
-    "start": " npm run build && npm run prettier && npm run lint && npm run server",
+    "start": " npm run build  && npm run server",
     "test": "npm run build && npm run jasmine "
   },
   "author": "Eng.Shehab Abbas",

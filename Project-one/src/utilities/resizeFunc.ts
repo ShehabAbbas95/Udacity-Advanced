@@ -6,7 +6,7 @@ const resizeImg = async (
   imgfullname: string,
   imgW: number,
   imgH: number
-) => {
+): Promise<void> => {
   const imgFullname = imgfullname.split('.');
   const imgName = imgFullname[0];
   const imgExt = imgFullname[1];

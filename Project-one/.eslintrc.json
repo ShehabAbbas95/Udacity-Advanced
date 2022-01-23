@@ -19,6 +19,7 @@
     "rules": {
         "semi": [2, "always"],
          "camelcase": "off",
-         "no-undef": "off"
+         "no-undef": "off",
+         "comma-dangle": "off"
     }
 }

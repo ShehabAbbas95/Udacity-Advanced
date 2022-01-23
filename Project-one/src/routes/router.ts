@@ -15,16 +15,26 @@ const welcome = (_req: Request, res: Response) => {
 
 router.get('/', welcome);
 
-const imgProcessing = (req: Request, res: Response) => {
+const imgProcessing = (req: Request, res: Response): void => {
   // get the query data from the url
   const QueryData = req.query;
   const filename: string = QueryData.filename as unknown as string;
 
   const imgW: number = parseInt(QueryData.width as unknown as string);
   const imgH: number = parseInt(QueryData.height as unknown as string);
-  if (!filename || !imgW || !imgH) {
+  if (!filename) {
     throw new Error(
-      'Missing Query Data \n You have to specify an existed filename and positive value for width and height\n'
+      'Missing Query Data \n You have to specify an existed filename\n'
+    );
+  }
+  if (!imgW) {
+    throw new Error(
+      'Missing Query Data \n You have to specify a positive value for width ( i.e width=100 or width=200 )\n'
+    );
+  }
+  if (!imgH) {
+    throw new Error(
+      'Missing Query Data \n You have to specify positive value for height (i.e height=100 or height=50 )\n'
     );
   }
   const FileName = filename.split('');
@@ -48,7 +58,7 @@ const imgProcessing = (req: Request, res: Response) => {
   );
 
   // function to send the img to the user
-  const sendingImg = () => {
+  const sendingImg = (): void => {
     setTimeout(() => {
       res.sendFile(`(${imgW}-${imgH}).${fileExtn}`, {
         root: path.join(__dirname, `../../images/thumbnails/${dirName}`)
@@ -60,7 +70,7 @@ const imgProcessing = (req: Request, res: Response) => {
    * first checks if the size requested is already exist (caching)
    * if its a new size so resize the image and sent it
    */
-  (async () => {
+  (async (): Promise<void> => {
     /*
      * the next try block functionality is as follow
      * first try to find a directory with the name of the img requested using fs.readFileSync()
