@@ -1,0 +1,35 @@
+  async admin (token: string): Promise<string> {
+    try {
+      const conn = await client.connect();
+      const sql = 'SELECT  role FROM users where token = ($1)';
+
+      const result = await conn.query(sql, [token]);
+      const user_role = result.rows[0].role;
+      console.log(user_role);
+      conn.release();
+      return user_role;
+    } catch (err) {
+      throw new Error(`admin error ${err}`);
+    }
+  }
+
+
+
+  --------------------
+  beforeAll( async () => {
+      const firstName = 'ahmed',
+        lastName = 'mohamed',
+        password = 'hell123',
+        hash = bcrypt.hashSync(password + pepper, parseInt(saltRounds)),
+        username = 'test_ahmed',
+        role = 'admin',
+        JWT = jwt.sign({ sub: username, role: role }, secretToken);
+      const result = await store.addUser(
+        firstName,
+        lastName,
+        hash,
+        username,
+        JWT,
+        role
+      );
+  });
